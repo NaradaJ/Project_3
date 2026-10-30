@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Process mysqld -ErrorAction SilentlyContinue)",
+      "PowerShell(& C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe --version)",
+      "PowerShell(& C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe -u root -e \"SELECT VERSION\\(\\);\")"
+    ]
+  }
+}

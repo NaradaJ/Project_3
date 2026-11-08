@@ -29,6 +29,17 @@ public static class Messages
             ShowError("Cannot connect to the database.\n\n" +
                       "Please open the XAMPP Control Panel, start MySQL, and try again.");
         }
+        else if (ex is MySqlException noDbEx && noDbEx.ErrorCode == MySqlErrorCode.UnknownDatabase)
+        {
+            ShowError("The GSTS database was not found.\n\n" +
+                      "Run Database\\01_schema.sql and then Database\\02_seed.sql " +
+                      "(see the README), or reinstall GSTS and tick \"Create the GSTS database\".");
+        }
+        else if (ex is MySqlException deniedEx && deniedEx.ErrorCode == MySqlErrorCode.AccessDenied)
+        {
+            ShowError("The database user name or password is wrong.\n\n" +
+                      "Correct the connection settings in:\n" + AppConfig.ConfigFilePath);
+        }
         else if (ex is MySqlException)
         {
             ShowError("A database error occurred:\n\n" + ex.Message);

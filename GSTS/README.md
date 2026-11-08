@@ -138,21 +138,43 @@ which keeps every line of code easy to read and explain.
 
 ## 🚀 Getting started
 
-### Prerequisites
+### Quick install (setup file)
+For evaluators and office PCs. No Visual Studio or .NET install is needed.
+
+1. Install [XAMPP](https://www.apachefriends.org/) and click **Start** next to **MySQL** in the XAMPP Control Panel.
+2. Run **`GSTS-Setup.exe`**.
+3. On the **Database connection** page, keep the defaults (`localhost`, `3306`, `root`, no password) unless your MySQL is set up differently.
+4. Leave **Create the GSTS database with the sample data** ticked on the first install.
+   ⚠️ This deletes any existing `gsts` database.
+5. Finish the setup and start **GSTS** from the Start menu or the desktop shortcut. Log in with one of the [default logins](#-default-logins).
+
+The connection settings are saved in `gsts.config` in the install folder (`C:\Program Files\GSTS`).
+To change them later, edit that file and restart GSTS. Uninstall from **Settings → Apps**.
+
+**Building the setup file** (developers only) needs the .NET 10 SDK and
+[Inno Setup 6](https://jrsoftware.org/isdl.php):
+```powershell
+powershell -ExecutionPolicy Bypass -File Installer\build-installer.ps1
+```
+The result is `Installer\Output\GSTS-Setup.exe`.
+
+### Run from source
+
+#### Prerequisites
 - Windows 10 or 11
 - [Visual Studio 2026](https://visualstudio.microsoft.com/) with the **.NET desktop development** workload (or the .NET 10 SDK)
 - [XAMPP](https://www.apachefriends.org/) (for MariaDB/MySQL)
 
-### 1. Get the code
+#### 1. Get the code
 ```bash
 git clone https://github.com/NaradaJ/GSTS.git
 cd GSTS
 ```
 
-### 2. Start the database
+#### 2. Start the database
 Open the **XAMPP Control Panel** and click **Start** next to **MySQL**.
 
-### 3. Create the database
+#### 3. Create the database
 Run the two scripts in this order.
 
 > ⚠️ `01_schema.sql` **deletes** any existing `gsts` database before creating it again.
@@ -166,12 +188,23 @@ cmd /c "C:\xampp\mysql\bin\mysql.exe -u root < Database\01_schema.sql"
 cmd /c "C:\xampp\mysql\bin\mysql.exe -u root < Database\02_seed.sql"
 ```
 
-### 4. Run the application
+#### 4. Run the application
 - **Visual Studio:** open `GSTS.sln` and press **F5**
 - **Command line:**
   ```powershell
   dotnet run --project GSTS
   ```
+  Run this from the folder that contains `GSTS.sln`. From the folder above it, use
+  `dotnet run --project GSTS\GSTS`.
+
+#### 5. Log in
+| Role | Username | Password |
+|---|---|---|
+| Administrator | `admin` | `Admin@123` |
+| Officer | `198512345678` | `Officer@123` |
+| Citizen | `901234567V` | `Citizen@123` |
+
+The full list of demo accounts is in [Default logins](#-default-logins).
 
 > If your MySQL `root` user has a password, or MySQL runs on a port other than 3306, update the
 > connection string in [`GSTS/AppConfig.cs`](GSTS/AppConfig.cs).
@@ -225,6 +258,9 @@ GSTS/
 │   ├── Models/              Person, Officer, Ticket, Step
 │   ├── Helpers/             PasswordHasher, Validator, Messages, UiHelper
 │   └── Forms/               15 screens (each with a .Designer.cs for the Form Designer)
+├── Installer/
+│   ├── GSTS.iss             Inno Setup script (setup wizard, database page)
+│   └── build-installer.ps1  publishes the app and builds GSTS-Setup.exe
 ├── docs/screenshots/
 ├── DEVIATIONS.md            differences from the design report, with reasons
 └── README.md

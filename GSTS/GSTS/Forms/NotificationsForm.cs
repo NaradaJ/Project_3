@@ -3,7 +3,7 @@ using GSTS.Services;
 
 namespace GSTS.Forms;
 
-// FR8 – View notifications and mark them as read (Report §3.4 ViewNotifications)
+// FR8 – An officer reads the notifications sent to them and marks them as read.
 public partial class NotificationsForm : Form
 {
     public NotificationsForm()
@@ -18,8 +18,8 @@ public partial class NotificationsForm : Form
 
     private void LoadNotifications()
     {
-        UiHelper.FillGrid(gridNotifications, NotificationService.ViewNotifications(Session.PersonId), "notification_id");
-        lblCount.Text = NotificationService.UnreadCount(Session.PersonId) + " unread";
+        UiHelper.FillGrid(gridNotifications, NotificationService.ViewNotifications(Session.OfficerId), "notification_id");
+        lblCount.Text = NotificationService.UnreadCount(Session.OfficerId) + " unread";
     }
 
     // WHEN the user opens a notification: mark it as read.
@@ -31,7 +31,7 @@ public partial class NotificationsForm : Form
             Messages.ShowError("Please select a notification");
             return;
         }
-        NotificationService.MarkAsRead(id.Value, Session.PersonId);
+        NotificationService.MarkAsRead(id.Value, Session.OfficerId);
         LoadNotifications();
     }
 

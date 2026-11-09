@@ -2,7 +2,7 @@ using MySqlConnector;
 
 namespace GSTS.Helpers;
 
-// NFR1 / NFR5 – One place for all message boxes, so every screen shows
+// NFR Usability / Reliability – One place for all message boxes, so every screen shows
 // messages the same way.
 public static class Messages
 {
@@ -21,7 +21,7 @@ public static class Messages
         return MessageBox.Show(message, "GSTS", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
     }
 
-    // NFR5 – Turns an error into a clear message instead of crashing the application.
+    // NFR Reliability – Turns an error into a clear message instead of crashing the application.
     public static void ShowException(Exception ex)
     {
         if (ex is MySqlException mysqlEx && mysqlEx.ErrorCode == MySqlErrorCode.UnableToConnectToHost)

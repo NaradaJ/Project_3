@@ -4,12 +4,9 @@ using GSTS.Services;
 
 namespace GSTS.Forms;
 
-// FR2 – Login and Role-Based Access (Figure 2)
+// Officer sign-in. Officer accounts are pre-registered (Report 1.4).
 public partial class LoginForm : Form
 {
-    private const int MaxAttempts = 3;
-    private int attempts = 0;
-
     public LoginForm()
     {
         InitializeComponent();
@@ -23,48 +20,17 @@ public partial class LoginForm : Form
             return;
         }
 
-        Person? user = AuthService.Login(txtUsername.Text, txtPassword.Text, out int? officerId);
-        if (user == null)
+        Officer? officer = AuthService.Login(txtUsername.Text, txtPassword.Text);
+        if (officer == null)
         {
-            attempts++;
-            if (attempts >= MaxAttempts)
-            {
-                // After three failed tries login is disabled for this session (Figure 2).
-                btnLogin.Enabled = false;
-                txtUsername.Enabled = false;
-                txtPassword.Enabled = false;
-                Messages.ShowError("Too many failed attempts. Login is disabled for this session");
-            }
-            else
-            {
-                Messages.ShowError("Incorrect username or password");
-            }
+            Messages.ShowError("Incorrect username or password");
             return;
         }
 
-        attempts = 0;
-        Session.Start(user, officerId);
-        OpenDashboard();
-    }
-
-    // CASE user.role OF Citizen / Officer / Admin
-    private void OpenDashboard()
-    {
-        Form dashboard;
-        switch (Session.Role)
-        {
-            case "Citizen":
-                dashboard = new CitizenDashboardForm();
-                break;
-            case "Officer":
-                dashboard = new OfficerDashboardForm();
-                break;
-            default:
-                dashboard = new AdminDashboardForm();
-                break;
-        }
-
+        Session.Start(officer);
         txtPassword.Clear();
+
+        var dashboard = new OfficerDashboardForm();
         dashboard.FormClosed += Dashboard_FormClosed;
         Hide();
         dashboard.Show();
@@ -74,7 +40,7 @@ public partial class LoginForm : Form
     // otherwise (window closed with X) exit the application.
     private void Dashboard_FormClosed(object? sender, FormClosedEventArgs e)
     {
-        if (Session.CurrentUser == null)
+        if (Session.CurrentOfficer == null)
         {
             Show();
             txtUsername.Focus();
@@ -83,11 +49,5 @@ public partial class LoginForm : Form
         {
             Close();
         }
-    }
-
-    private void btnRegister_Click(object sender, EventArgs e)
-    {
-        using var form = new RegisterForm();
-        form.ShowDialog(this);
     }
 }

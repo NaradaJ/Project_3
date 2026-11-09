@@ -1,22 +1,40 @@
-# Deviations from the submitted report
+# Implementation decisions
 
-The implementation follows the requirements (FR1–FR16), the pseudocode (§3.4) and the
-6-table design (§3.0) of the report. This file lists every place where the code differs,
-with the reason. Most are small fixes for cases the pseudocode does not cover.
+The code implements the submitted design report **E2510192 (Jayasuriya N.K.)**:
+FR1–FR11, the five non-functional requirements, Flowcharts 1–5 and the pseudocode in §3.4.
 
-| ID | Report says | Implementation | Why |
+The report deliberately leaves some details open. Its last section, *"Database design points to
+resolve before implementation"*, lists the gaps in the proposed data structure. This file records
+how each open point was settled, and every other place where the code had to choose something
+the report does not state.
+
+## Points the report asked to be resolved
+
+| ID | Report | Implementation |
+|---|---|---|
+| **R1** | Design point 1: represent the currently assigned officer | `Tickets.assigned_officer_id` holds the current handler (FR3, FR11) |
+| **R2** | Design point 2: record assignment history, or at least log every assignment | Every assignment is logged as `ASSIGNED` with the new officer's name (FR3, FR9) |
+| **R3** | Design point 3 and review finding 1: represent stages | Each step has a `stage` number and the ticket has a `current_stage`. A ticket moves to the next stage that has steps; after the last stage it is Completed (FR5, Flowchart 3) |
+| **R4** | Design point 4 and review finding 3: log every auditable action | Log actions: `CREATED`, `ASSIGNED`, `REQUIREMENT_VERIFIED`, `STEP_ADDED`, `STEP_EDITED`, `STEP_REORDERED`, `STEP_COMPLETED`, `STEP_SKIPPED`, `STAGE_PROGRESSED`, `COMPLETED`, `APPROVED`, `FLAGGED` |
+| **R5** | Design point 5: preserve the officer who defined the workflow | `Tickets.workflow_defined_by` = the first officer who adds a step. FR8 notifications go to this officer. If no step has been defined yet, the officer who created the ticket is notified |
+| **R6** | Review finding 6: optional-step skipping | A skipped optional step has status `Skipped` and the skip is logged |
+| **R7** | §1.4: GUI language and framework not finalised | C# Windows Forms (.NET 10) in Visual Studio, whose form designer is a visual programming environment. MariaDB through XAMPP, as the report states |
+
+## Other decisions
+
+| ID | Topic | Decision | Why |
 |---|---|---|---|
-| **T1** | §1.5 / NFR1 / NFR8: Python with Tkinter | C# with Windows Forms (.NET 10). The database is still MariaDB on XAMPP, as in the report | Visual Studio's form designer is also a visual programming environment; same requirements, flowcharts, pseudocode and tables |
-| **D1** | `InsertLog(ticket, step, officer_id, …)`. ManageOfficer and ReassignTicket pass the admin's id as `officer_id` | `TicketOfficerLog` has an extra column `performed_by` (FK → Persons) recording who did the action. `officer_id` holds the officer concerned | Administrators are not in the Officers table, so their id in `officer_id` would break the foreign key |
-| **D2** | AssignOfficer sets the step to `Waiting` when no officer is available | `current_step` is still updated. When an officer is **added or edited**, waiting steps for their step name are assigned automatically (`TicketService.AssignWaitingSteps`) | Without this, a Waiting ticket would never move |
-| **D3** | §3.0: template rows are held in Steps | Steps has a `service_type` column; template rows have `ticket_id = NULL` and `status = 'Template'` | Needed to tell which service type a template row belongs to |
-| **D4** | GenerateTicketNo = COUNT + 1 | Same formula, plus a UNIQUE constraint on `ticket_no` | If two tickets are saved at exactly the same moment, one gets the pseudocode's message "The ticket could not be saved. Please try again" instead of a duplicate number |
-| **D5** | ManageOfficer ADD inputs: name, nic, contact, designation, department, handles_step | Also asks for an **initial password**. The officer's username is their NIC (as for citizens) | Without a password the officer could not log in |
-| **D6** | DEACTIVATE sets `Officers.is_active = FALSE` | Also sets `Persons.is_active = FALSE` | A deactivated officer should not be able to log in |
-| **D7** | CreateTicket copies template steps with their `step_order` | Ticket steps are numbered 1, 2, 3 … in template order | If an admin removes a template step (e.g. order 2), there would be a gap and "next step = order + 1" would fail |
-| **D8** | EDIT: update the officer | Changing the step an officer handles is refused while they hold active tickets ("Reassign this officer's tickets first") | Otherwise an officer could hold a ticket for a step they no longer handle |
-| **D9** | FR7 lists "view"; the pseudocode does not log it | Opening a ticket in ProcessStepForm logs `VIEWED` | FR7 requires it |
-| **D10** | `created_at BETWEEN from_date AND to_date` | `created_at >= from AND created_at < to + 1 day` | `BETWEEN` on a date-time would leave out most of the last day |
-| **D11** | Not covered | CreateTicket refuses a service type with no steps; ReassignTicket says "This ticket has no active step to reassign" when the ticket is Waiting/Returned | Prevent errors in cases the pseudocode does not mention |
-| **D12** | ProcessStep reads the step, then saves | The step is read again inside the transaction (`FOR UPDATE`) | The same step cannot be processed twice (e.g. two clicks) |
-| **D13** | Login: after 3 failures "EXIT" | The login button is disabled for the rest of the session (the app stays open showing the message) | Same effect as the flowchart: login disabled for this session |
+| **D1** | Officer identity | Officers sign in with a username and password. Accounts are pre-registered by `02_seed.sql` (Report §1.4); the app has no registration screen | Every action must be logged with the officer's identity (FR9), so the app must know who is using it |
+| **D2** | Ticket ID format (FR2) | `GST-YYYY-NNNNNN`, built from the AUTO_INCREMENT id, with a UNIQUE constraint | The ID can never repeat |
+| **D3** | Citizen details (FR1) | A citizen is matched by ID number; a returning citizen's name and phone are updated. ID number and phone are checked for format only | Avoids duplicate citizens; real ID verification is out of scope (§1.4) |
+| **D4** | "Available officer" (FR3) | Any active officer account | The report does not define availability further |
+| **D5** | Review trigger (FR6) | Viewing a ticket is not logged, so opening a ticket or the status report does not change "the last officer who acted" | Otherwise simply looking at a ticket would force the next officer to review the viewer |
+| **D6** | Flag/Change (FR6, FR8) | One choice, "Flag/Change", sets the status to `Flagged` and notifies the originating officer. The officer can then change the steps | The report presents Flag/Change as one option |
+| **D7** | Clearing a flag | When the next officer chooses Approve, a `Flagged` ticket returns to `In Progress` | The report does not say how a flagged ticket continues |
+| **D8** | Review rule is enforced twice | The screens become view-only until the review is done, and every service method also refuses edits | The rule holds even if a screen is changed later |
+| **D9** | Stage rules (FR5) | Only steps of the current stage can be completed or skipped. A new or edited step cannot be placed in a stage the ticket has already passed. Only pending steps can be edited | Keeps the stage order meaningful |
+| **D10** | Progressing with no steps | Refused: "Please define the steps for this ticket first" | Otherwise a ticket with no steps would be completed at once |
+| **D11** | Completed tickets | Read-only; no review is asked | No further work happens on a completed ticket |
+| **D12** | Status lookup (FR11) | Accepts the full ticket ID (`GST-2026-000001`) or just its number | Easier for an officer at the counter |
+| **D13** | Elapsed time (FR10) | Shown as days, hours, minutes and seconds and refreshed every second while a ticket or report is open | "Updating automatically while the ticket is open" |
+| **D14** | Text limits | Reason and verified requirement 500 characters, step 200, note 1000. The notification column holds the full note | Values are never cut off silently |

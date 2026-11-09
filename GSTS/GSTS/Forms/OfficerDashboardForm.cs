@@ -1,11 +1,11 @@
 using System.Data;
 using GSTS.Helpers;
-using GSTS.Models;
 using GSTS.Services;
 
 namespace GSTS.Forms;
 
-// FR5 – View Assigned Tickets (Report §3.4 ViewAssignedTickets, Figure 4)
+// The officer's main screen: their tickets (or all open tickets), and the
+// buttons for the four functionalities and the status lookup.
 public partial class OfficerDashboardForm : Form
 {
     public OfficerDashboardForm()
@@ -15,65 +15,80 @@ public partial class OfficerDashboardForm : Form
 
     private void OfficerDashboardForm_Load(object sender, EventArgs e)
     {
-        lblWelcome.Text = "Welcome, " + Session.CurrentUser!.Name;
+        lblWelcome.Text = "Welcome, " + Session.CurrentOfficer!.Name + " (" + Session.CurrentOfficer.Designation + ")";
         RefreshData();
     }
 
     private void RefreshData()
     {
-        DataTable rows = TicketService.ViewAssignedTickets(Session.OfficerId!.Value);
-        UiHelper.FillGrid(gridAssigned, rows, "ticket_id");
-        lblEmpty.Visible = rows.Rows.Count == 0; // "No tickets are assigned to you"
-        btnNotifications.Text = "Notifications (" + NotificationService.UnreadCount(Session.PersonId) + " unread)";
+        DataTable rows = rdoMine.Checked
+            ? TicketService.GetMyTickets(Session.OfficerId)
+            : TicketService.GetOpenTickets();
+        UiHelper.FillGrid(gridTickets, rows, "ticket_id");
+        lblEmpty.Visible = rows.Rows.Count == 0;
+        btnNotifications.Text = "Notifications (" + NotificationService.UnreadCount(Session.OfficerId) + " unread)";
     }
 
-    // FR6 – open the selected ticket for processing.
-    private void ProcessSelectedTicket()
+    // F1 – create a new ticket.
+    private void btnNewTicket_Click(object sender, EventArgs e)
     {
-        int? ticketId = UiHelper.SelectedId(gridAssigned, "ticket_id");
+        using var form = new NewTicketForm();
+        if (form.ShowDialog(this) == DialogResult.OK && form.CreatedTicketId != null)
+        {
+            OpenTicket(form.CreatedTicketId.Value);
+        }
+        RefreshData();
+    }
+
+    // F2, F3, F4 – open the selected ticket to work on it.
+    private void btnOpen_Click(object sender, EventArgs e)
+    {
+        OpenSelectedTicket();
+    }
+
+    private void gridTickets_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex >= 0)
+        {
+            OpenSelectedTicket();
+        }
+    }
+
+    private void OpenSelectedTicket()
+    {
+        int? ticketId = UiHelper.SelectedId(gridTickets, "ticket_id");
         if (ticketId == null)
         {
             Messages.ShowError("Please select a ticket");
             return;
         }
+        OpenTicket(ticketId.Value);
+    }
 
-        Step? step = TicketService.GetActiveStepForOfficer(Session.OfficerId!.Value, ticketId.Value);
-        if (step == null)
-        {
-            Messages.ShowError("This ticket is not assigned to you");
-            RefreshData();
-            return;
-        }
-
-        using var form = new ProcessStepForm(ticketId.Value, step);
+    private void OpenTicket(int ticketId)
+    {
+        using var form = new TicketForm(ticketId);
         form.ShowDialog(this);
         RefreshData();
     }
 
-    private void btnProcess_Click(object sender, EventArgs e)
+    // FR11 – look up any ticket by its ID.
+    private void btnLookup_Click(object sender, EventArgs e)
     {
-        ProcessSelectedTicket();
-    }
-
-    private void gridAssigned_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-    {
-        if (e.RowIndex >= 0)
-        {
-            ProcessSelectedTicket();
-        }
-    }
-
-    private void btnSearch_Click(object sender, EventArgs e)
-    {
-        using var form = new SearchTicketsForm();
+        using var form = new StatusReportForm(null);
         form.ShowDialog(this);
-        RefreshData();
     }
 
+    // FR8 – notifications sent to this officer.
     private void btnNotifications_Click(object sender, EventArgs e)
     {
         using var form = new NotificationsForm();
         form.ShowDialog(this);
+        RefreshData();
+    }
+
+    private void rdoMine_CheckedChanged(object sender, EventArgs e)
+    {
         RefreshData();
     }
 
@@ -82,13 +97,6 @@ public partial class OfficerDashboardForm : Form
         RefreshData();
     }
 
-    private void btnChangePassword_Click(object sender, EventArgs e)
-    {
-        using var form = new ChangePasswordForm();
-        form.ShowDialog(this);
-    }
-
-    // FR16 – Logout
     private void btnLogout_Click(object sender, EventArgs e)
     {
         Session.Clear();

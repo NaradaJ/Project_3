@@ -2,25 +2,20 @@ using System.Text.RegularExpressions;
 
 namespace GSTS.Helpers;
 
-// FR1 – Input validation rules used by RegisterUser and ManageOfficer.
+// Input checks used when a ticket is created (FR1).
 public static class Validator
 {
     // Sri Lankan NIC: old format = 9 digits + V or X (e.g. 901234567V),
     // new format = 12 digits (e.g. 199012345678).
-    public static bool ValidNIC(string nic)
+    // Only the format is checked: real ID verification is out of scope (Report 1.4).
+    public static bool ValidIdNumber(string idNumber)
     {
-        return Regex.IsMatch(nic, @"^(\d{9}[VvXx]|\d{12})$");
+        return Regex.IsMatch(idNumber, @"^(\d{9}[VvXx]|\d{12})$");
     }
 
     // Phone number: 10 digits starting with 0 (e.g. 0771234567).
-    public static bool ValidPhone(string contact)
+    public static bool ValidPhone(string phone)
     {
-        return Regex.IsMatch(contact, @"^0\d{9}$");
-    }
-
-    // Password must be at least 8 characters (pseudocode: LENGTH(password) < 8 is invalid).
-    public static bool ValidPassword(string password)
-    {
-        return password.Length >= 8;
+        return Regex.IsMatch(phone, @"^0\d{9}$");
     }
 }

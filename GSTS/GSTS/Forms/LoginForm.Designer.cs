@@ -30,7 +30,6 @@ partial class LoginForm
         lblPassword = new Label();
         txtPassword = new TextBox();
         btnLogin = new Button();
-        btnRegister = new Button();
         lblHint = new Label();
         SuspendLayout();
         //
@@ -51,7 +50,7 @@ partial class LoginForm
         lblSubtitle.Name = "lblSubtitle";
         lblSubtitle.Size = new Size(150, 15);
         lblSubtitle.TabIndex = 1;
-        lblSubtitle.Text = "Please log in to continue";
+        lblSubtitle.Text = "Officer sign-in";
         //
         // lblUsername
         //
@@ -93,19 +92,9 @@ partial class LoginForm
         btnLogin.Name = "btnLogin";
         btnLogin.Size = new Size(120, 32);
         btnLogin.TabIndex = 6;
-        btnLogin.Text = "Log In";
+        btnLogin.Text = "Sign In";
         btnLogin.UseVisualStyleBackColor = true;
         btnLogin.Click += btnLogin_Click;
-        //
-        // btnRegister
-        //
-        btnRegister.Location = new Point(260, 175);
-        btnRegister.Name = "btnRegister";
-        btnRegister.Size = new Size(130, 32);
-        btnRegister.TabIndex = 7;
-        btnRegister.Text = "Register (Citizen)";
-        btnRegister.UseVisualStyleBackColor = true;
-        btnRegister.Click += btnRegister_Click;
         //
         // lblHint
         //
@@ -114,8 +103,8 @@ partial class LoginForm
         lblHint.Location = new Point(32, 225);
         lblHint.Name = "lblHint";
         lblHint.Size = new Size(300, 15);
-        lblHint.TabIndex = 8;
-        lblHint.Text = "Citizens and officers log in with their NIC number.";
+        lblHint.TabIndex = 7;
+        lblHint.Text = "Officer accounts are pre-registered by the office.";
         //
         // LoginForm
         //
@@ -130,13 +119,12 @@ partial class LoginForm
         Controls.Add(lblPassword);
         Controls.Add(txtPassword);
         Controls.Add(btnLogin);
-        Controls.Add(btnRegister);
         Controls.Add(lblHint);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         MaximizeBox = false;
         Name = "LoginForm";
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "GSTS – Login";
+        Text = "GSTS – Sign In";
         ResumeLayout(false);
         PerformLayout();
     }
@@ -150,6 +138,5 @@ partial class LoginForm
     private Label lblPassword;
     private TextBox txtPassword;
     private Button btnLogin;
-    private Button btnRegister;
     private Label lblHint;
 }

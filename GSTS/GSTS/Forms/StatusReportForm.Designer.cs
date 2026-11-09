@@ -54,12 +54,12 @@ partial class StatusReportForm
         lblTicketId.Name = "lblTicketId";
         lblTicketId.Size = new Size(57, 15);
         lblTicketId.TabIndex = 1;
-        lblTicketId.Text = "Ticket ID:";
+        lblTicketId.Text = "Search:";
         //
         // txtTicketId
         //
         txtTicketId.Location = new Point(90, 50);
-        txtTicketId.MaxLength = 20;
+        txtTicketId.MaxLength = 100;
         txtTicketId.Name = "txtTicketId";
         txtTicketId.Size = new Size(200, 23);
         txtTicketId.TabIndex = 2;
@@ -92,7 +92,7 @@ partial class StatusReportForm
         lblDetails.Padding = new Padding(6);
         lblDetails.Size = new Size(870, 95);
         lblDetails.TabIndex = 5;
-        lblDetails.Text = "Enter a ticket ID and click Search.";
+        lblDetails.Text = "Type a ticket ID, or a citizen's name or NIC, and click Search.\nLeave the box empty and click Search to list the completed tickets.";
         //
         // lblHandlers
         //

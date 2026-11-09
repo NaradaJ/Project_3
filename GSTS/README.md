@@ -55,7 +55,7 @@ The four functionalities and the supporting feature of the report (§1.4, §3.3)
 | **F2** | Requirement verification and step definition | Saves the requirement verified with the citizen; adds, edits and orders steps or documents in stages; marks compulsory steps (shown with \*) |
 | **F3** | Step completion and progression | Marks steps completed, skips optional ones, and progresses the ticket. Progression is blocked while a compulsory step of the current stage is incomplete |
 | **F4** | Officer review, flagging, notes and logging | An officer who is not the last officer who acted must choose **Approve** or **Flag/Change** before editing. Flagging notifies the officer who defined the workflow. Every action takes an optional note and is logged |
-| **Lookup** | Ticket status lookup | Any officer enters a ticket ID and sees the citizen's details, status, elapsed time, current and previous handlers, steps and the full activity log (newest first) |
+| **Lookup** | Ticket status lookup | Any officer searches by ticket ID, citizen name or NIC (an empty search lists the completed tickets) and sees the citizen's details, status, elapsed time, current and previous handlers, steps and the full activity log (newest first) |
 
 ---
 
@@ -171,7 +171,7 @@ GSTS/
 │   │   └── LogService       WriteLog, Notify, LastActor, ElapsedTime (FR7, FR9, FR10)
 │   ├── Models/              Person, Officer, Ticket, Step
 │   ├── Helpers/             PasswordHasher, Validator, Messages, UiHelper
-│   └── Forms/               8 screens (each with a .Designer.cs for the Form Designer)
+│   └── Forms/               9 screens (each with a .Designer.cs for the Form Designer)
 ├── Tests/                   automated checks of the services against a test database
 ├── DEVIATIONS.md            how the report's open design points were settled
 └── README.md
@@ -227,7 +227,7 @@ erDiagram
 | FR8 | Notify the originating officer | `ReviewService.ReviewTicket`, `LogService.Notify` | NotificationsForm |
 | FR9 | Maintain the activity log | `LogService.WriteLog` + triggers | StatusReportForm |
 | FR10 | Track elapsed time | `LogService.ElapsedTime` (timer every second) | TicketForm, StatusReportForm |
-| FR11 | Look up ticket status | `TicketService.FindTicket`, `GetPreviousHandlers`, `GetActivityLog`; `StepService.GetSteps` | StatusReportForm |
+| FR11 | Look up ticket status | `TicketService.FindTicket`, `SearchByCitizen`, `GetCompletedTickets`, `GetPreviousHandlers`, `GetActivityLog`; `StepService.GetSteps` | StatusReportForm, TicketPickerForm |
 
 ---
 
@@ -254,7 +254,9 @@ blocking progression, edits before review, UPDATE/DELETE on the log).
 dotnet run --project Tests
 ```
 
-Expected last line: `84 passed, 0 failed`.
+Expected last line: `88 passed, 0 failed`.
+
+Completed tickets leave the dashboard lists; find them with **Look Up Ticket ID** (leave the box empty, or search by name or NIC).
 
 The Windows Forms screens are not covered by the automated checks; test them by hand:
 
@@ -266,7 +268,7 @@ The Windows Forms screens are not covered by the automated checks; test them by 
 6. Sign in as `kamal`, open the ticket, choose **Flag/Change** with a note.
 7. Sign in as `nimali`: the dashboard shows 1 unread notification with Kamal's note.
 8. Approve, complete the stage-2 step and progress: the ticket is **Completed** with its total time.
-9. **Look Up Ticket ID** and check the handlers, steps and newest-first log.
+9. **Look Up Ticket ID** and check the handlers, steps and newest-first log. Then search with an empty box (completed tickets are listed) and by a citizen's name or NIC.
 10. Stop MySQL in XAMPP: the app shows a clear message instead of crashing.
 
 ---

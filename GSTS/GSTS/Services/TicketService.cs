@@ -217,6 +217,21 @@ public static class TicketService
         return Db.Query(TicketListSql("WHERE t.status <> 'Completed'"));
     }
 
+    // FR11 – an empty search lists the completed tickets, newest first,
+    // so an officer can find and view a ticket that is finished.
+    public static DataTable GetCompletedTickets()
+    {
+        return Db.Query(TicketListSql("WHERE t.status = 'Completed'"));
+    }
+
+    // FR11 – find tickets (open or completed) by part of the citizen's name or ID number (NIC).
+    public static DataTable SearchByCitizen(string text)
+    {
+        text = text.Trim();
+        return Db.Query(TicketListSql("WHERE p.name LIKE @text OR p.id_number LIKE @text"),
+            Db.P("@text", "%" + text + "%"));
+    }
+
     private static string TicketListSql(string where)
     {
         return @"SELECT t.ticket_id, t.ticket_no AS `Ticket ID`, p.name AS `Citizen`, t.reason AS `Reason`,

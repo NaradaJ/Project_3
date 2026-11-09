@@ -35,6 +35,6 @@ the report does not state.
 | **D9** | Stage rules (FR5) | Only steps of the current stage can be completed or skipped. A new or edited step cannot be placed in a stage the ticket has already passed. Only pending steps can be edited | Keeps the stage order meaningful |
 | **D10** | Progressing with no steps | Refused: "Please define the steps for this ticket first" | Otherwise a ticket with no steps would be completed at once |
 | **D11** | Completed tickets | Read-only; no review is asked | No further work happens on a completed ticket |
-| **D12** | Status lookup (FR11) | Accepts the full ticket ID (`GST-2026-000001`) or just its number | Easier for an officer at the counter |
+| **D12** | Status lookup (FR11) | One search box accepts the full ticket ID (`GST-2026-000001`) or just its number. If no ticket has that ID, it searches by the citizen's name or NIC. An empty search lists the completed tickets. When several tickets match, the officer picks one from a list | Completed tickets leave the dashboard lists, and a citizen may not have their ticket ID at hand |
 | **D13** | Elapsed time (FR10) | Shown as days, hours, minutes and seconds and refreshed every second while a ticket or report is open | "Updating automatically while the ticket is open" |
 | **D14** | Text limits | Reason and verified requirement 500 characters, step 200, note 1000. The notification column holds the full note | Values are never cut off silently |

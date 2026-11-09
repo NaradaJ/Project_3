@@ -1,3 +1,4 @@
+using System.Data;
 using GSTS.Helpers;
 using GSTS.Models;
 using GSTS.Services;
@@ -5,6 +6,8 @@ using GSTS.Services;
 namespace GSTS.Forms;
 
 // FR11 – Look up ticket status (Report §3.4.5, Flowchart 5).
+// The search box also finds tickets by citizen name or NIC, and an empty search
+// lists the completed tickets (see DEVIATIONS.md, D12).
 // Any officer enters a ticket ID and sees the consolidated status report:
 // citizen details and visit reason, status, elapsed time (FR10), current handler,
 // previous handlers with their first action and date, the ordered steps with
@@ -29,17 +32,57 @@ public partial class StatusReportForm : Form
         }
     }
 
+    // FR11 – one search box:
+    //   empty                  -> list the completed tickets to choose from
+    //   a ticket ID or number  -> show that ticket's report
+    //   anything else          -> search by the citizen's name or NIC
     private void btnSearch_Click(object sender, EventArgs e)
     {
-        // INPUT ticket_id; SEARCH; IF ticket does not exist THEN DISPLAY Ticket not found
-        int? ticketId = TicketService.FindTicket(txtTicketId.Text);
-        if (ticketId == null)
+        string text = txtTicketId.Text.Trim();
+
+        if (text == "")
         {
-            Messages.ShowError("Ticket not found. Please check the ticket ID (e.g. GST-2026-000001)");
+            DataTable completed = TicketService.GetCompletedTickets();
+            if (completed.Rows.Count == 0)
+            {
+                Messages.ShowInfo("There are no completed tickets yet");
+                return;
+            }
+            PickAndShow("Completed tickets", completed);
+            return;
+        }
+
+        int? ticketId = TicketService.FindTicket(text);
+        if (ticketId != null)
+        {
+            ShowReport(ticketId.Value);
+            return;
+        }
+
+        DataTable found = TicketService.SearchByCitizen(text);
+        if (found.Rows.Count == 0)
+        {
+            // IF ticket does not exist THEN DISPLAY Ticket not found
+            Messages.ShowError("Ticket not found. Enter a ticket ID (e.g. GST-2026-000001), a citizen's name or NIC");
             txtTicketId.Focus();
             return;
         }
-        ShowReport(ticketId.Value);
+        if (found.Rows.Count == 1)
+        {
+            ShowReport(Convert.ToInt32(found.Rows[0]["ticket_id"]));
+            return;
+        }
+        PickAndShow("Tickets for \"" + text + "\"", found);
+    }
+
+    // Lets the officer choose one ticket from a list, then shows its report.
+    private void PickAndShow(string title, DataTable tickets)
+    {
+        using var picker = new TicketPickerForm(title, tickets);
+        if (picker.ShowDialog(this) == DialogResult.OK && picker.SelectedTicketId != null)
+        {
+            ShowReport(picker.SelectedTicketId.Value);
+        }
     }
 
     private void ShowReport(int ticketId)

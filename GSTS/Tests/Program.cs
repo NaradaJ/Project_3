@@ -227,6 +227,13 @@ Check("previous handlers: each officer once, with their first action",
     && (string)handlers.Rows[1]["First Action"] == "APPROVED");
 DataTable fullLog = TicketService.GetActivityLog(t1);
 Check("activity log is newest first", (string)fullLog.Rows[0]["Action"] == "COMPLETED");
+DataTable completedList = TicketService.GetCompletedTickets();
+Check("empty search: only the completed ticket is listed",
+    completedList.Rows.Count == 1 && Convert.ToInt32(completedList.Rows[0]["ticket_id"]) == t1);
+Check("search by part of a name finds the citizen's tickets (open and completed)",
+    TicketService.SearchByCitizen("saman").Rows.Count == 2);
+Check("search by NIC finds the citizen's tickets", TicketService.SearchByCitizen("199512345670").Rows.Count == 1);
+Check("search with no match finds nothing", TicketService.SearchByCitizen("Nobody Here").Rows.Count == 0);
 Check("lists show only open tickets for the officer",
     TicketService.GetMyTickets(Nimali).Rows.Count == 0 && TicketService.GetMyTickets(Kamal).Rows.Count == 2);
 

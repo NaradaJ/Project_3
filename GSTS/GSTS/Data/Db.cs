@@ -4,7 +4,7 @@ using MySqlConnector;
 namespace GSTS.Data;
 
 // Database access helper. Every query in the system goes through these methods.
-// NFR3 – all values are passed as parameters (@name), never joined into the SQL text,
+// Security: all values are passed as parameters (@name), never joined into the SQL text,
 // which prevents SQL injection.
 public static class Db
 {
@@ -91,7 +91,7 @@ public static class Db
         return Execute(conn, null, sql, parameters);
     }
 
-    // Used at start-up to check that XAMPP MySQL is running (NFR5).
+    // Used at start-up to check that XAMPP MySQL is running (NFR Reliability).
     public static void TestConnection()
     {
         using var conn = GetConnection();

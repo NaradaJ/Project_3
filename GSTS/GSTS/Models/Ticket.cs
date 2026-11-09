@@ -2,37 +2,50 @@ using System.Data;
 
 namespace GSTS.Models;
 
-// One row of the Tickets table, together with the citizen's name and NIC.
+// One row of the Tickets table, with the citizen's details and the
+// names of the assigned officer and the officer who defined the workflow.
 public class Ticket
 {
     public int TicketId { get; set; }
     public string TicketNo { get; set; } = "";
-    public int CitizenId { get; set; }
+    public int PersonId { get; set; }
     public string CitizenName { get; set; } = "";
-    public string CitizenNic { get; set; } = "";
-    public string ServiceType { get; set; } = "";
-    public string Details { get; set; } = "";
+    public string IdNumber { get; set; } = "";
+    public string PhoneNumber { get; set; } = "";
+    public string Reason { get; set; } = "";
+    public string VerifiedRequirement { get; set; } = "";
     public string Status { get; set; } = "";
-    public int? CurrentStep { get; set; }
+    public int CurrentStage { get; set; }
+    public int AssignedOfficerId { get; set; }
+    public string AssignedOfficerName { get; set; } = "";
+    public int CreatedBy { get; set; }
+    public int? WorkflowDefinedBy { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime? ClosedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
 
-    // Expects a row from: SELECT t.*, p.name, p.nic FROM Tickets t JOIN Persons p ...
+    public bool IsCompleted => Status == "Completed";
+
+    // Expects a row from TicketService.GetTicket.
     public static Ticket FromRow(DataRow row)
     {
         return new Ticket
         {
             TicketId = Convert.ToInt32(row["ticket_id"]),
             TicketNo = Convert.ToString(row["ticket_no"]) ?? "",
-            CitizenId = Convert.ToInt32(row["citizen_id"]),
+            PersonId = Convert.ToInt32(row["person_id"]),
             CitizenName = Convert.ToString(row["name"]) ?? "",
-            CitizenNic = Convert.ToString(row["nic"]) ?? "",
-            ServiceType = Convert.ToString(row["service_type"]) ?? "",
-            Details = Convert.ToString(row["details"]) ?? "",
+            IdNumber = Convert.ToString(row["id_number"]) ?? "",
+            PhoneNumber = Convert.ToString(row["phone_number"]) ?? "",
+            Reason = Convert.ToString(row["reason"]) ?? "",
+            VerifiedRequirement = Convert.ToString(row["verified_requirement"]) ?? "",
             Status = Convert.ToString(row["status"]) ?? "",
-            CurrentStep = row["current_step"] is DBNull ? null : Convert.ToInt32(row["current_step"]),
+            CurrentStage = Convert.ToInt32(row["current_stage"]),
+            AssignedOfficerId = Convert.ToInt32(row["assigned_officer_id"]),
+            AssignedOfficerName = Convert.ToString(row["assigned_officer_name"]) ?? "",
+            CreatedBy = Convert.ToInt32(row["created_by"]),
+            WorkflowDefinedBy = row["workflow_defined_by"] is DBNull ? null : Convert.ToInt32(row["workflow_defined_by"]),
             CreatedAt = Convert.ToDateTime(row["created_at"]),
-            ClosedAt = row["closed_at"] is DBNull ? null : Convert.ToDateTime(row["closed_at"])
+            CompletedAt = row["completed_at"] is DBNull ? null : Convert.ToDateTime(row["completed_at"])
         };
     }
 }

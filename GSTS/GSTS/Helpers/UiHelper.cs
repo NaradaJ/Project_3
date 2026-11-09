@@ -2,7 +2,7 @@ using System.Data;
 
 namespace GSTS.Helpers;
 
-// Small helpers shared by the forms (NFR1 – consistent screens).
+// Small helpers shared by the forms (NFR Usability – consistent screens).
 public static class UiHelper
 {
     // Shows a DataTable in a grid and hides the internal id columns.

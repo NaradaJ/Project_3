@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 
 namespace GSTS.Helpers;
 
-// NFR3 – Passwords are stored hashed, never as plain text.
+// Security: officer passwords are stored hashed, never as plain text.
 // Uses PBKDF2 (built into .NET) with SHA-256, a random 16-byte salt
 // and 100,000 iterations. Stored format: "base64salt:base64hash".
 public static class PasswordHasher

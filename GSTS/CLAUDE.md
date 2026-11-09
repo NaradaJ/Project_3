@@ -1,18 +1,18 @@
 # CLAUDE.md – Government Service Ticketing System (GSTS)
 
-A student's ITE1943 ICT Project. The design report is **already submitted**; the code must
-implement exactly what it describes, in simple C# the student can explain in a viva.
-Source of truth: `docs/GSTS_Report.txt` (copy it here from the starter zip). Read the
-relevant section before changing any requirement.
+A student's ITE1943 ICT Project. The design report **E2510192 (Jayasuriya N.K.)** is already
+submitted; the code must implement exactly what it describes, in simple C# the student can
+explain in a viva. Read the relevant report section before changing any requirement.
 
 ## Rules
-1. Implement only FR1–FR16 / NFR1–NFR10. No email/SMS, payments, web front end, uploads or new roles.
-2. Business methods keep the pseudocode names and messages (`RegisterUser`, `CreateTicket`,
-   `AssignOfficer`, `ProcessStep`, `ResubmitTicket`, `SearchTickets`, `ReassignTicket`, `GenerateReport` …).
-   Put a comment above each one naming its requirement, e.g. `// FR6 – … (Report §3.4, Figure 4)`.
-3. Any change from the report goes in `DEVIATIONS.md` (what the report says, what the code does, why).
-   If the report is unclear: ask, don't guess.
-4. Only use APIs you are sure exist. Run `dotnet build` (0 errors, 0 warnings) before saying a change is done.
+1. Implement only FR1–FR11 and the five NFRs of the submitted report. The app is used by
+   officers only; officer accounts are pre-registered. No citizen login, admin screens,
+   reports, SMS/email, payments or web front end.
+2. Business methods follow the report's pseudocode (§3.4.1–§3.4.5). Put a comment above each one
+   naming its requirement and flowchart, e.g. `// FR5 – Progress the ticket (Report §3.4.3, Flowchart 3)`.
+3. Any decision the report does not settle goes in `DEVIATIONS.md`. If the report is unclear: ask, don't guess.
+4. Only use APIs you are sure exist. Before saying a change is done:
+   `dotnet build` (0 errors, 0 warnings) and `dotnet run --project Tests` (all checks pass).
 
 ## Technology (keep it simple)
 - C# Windows Forms, `net10.0-windows`, Visual Studio 2026.
@@ -22,14 +22,13 @@ relevant section before changing any requirement.
 
 ## Structure
 - `Forms/` – screens only, **no SQL**. Every form has a designer-compatible `.Designer.cs`.
-- `Services/` – business logic; return `Result.Ok(msg)` / `Result.Fail(msg)`.
+- `Services/` – business logic, no Windows Forms code; return `Result.Ok(msg)` / `Result.Fail(msg)`.
+  TicketService (F1, FR11), StepService (F2, F3), ReviewService (F4), LogService (helpers), NotificationService.
 - `Data/Db.cs` – the only place that runs SQL; always `Db.P("@name", value)` parameters.
-- Multi-table changes: one `MySqlTransaction`, rollback in `catch`, as in the pseudocode.
-- Errors: `Program.cs` has a global handler (`Messages.ShowException`) so the app never crashes (NFR5).
+- A change and its log entry are saved in one `MySqlTransaction`, rolled back on failure.
+- `Tests/` – console program that runs the services against a separate `gsts_test` database.
 
-## Database (Database/01_schema.sql – 6 tables of Report §3.0)
-Persons, Officers, Tickets, Steps (template rows: `ticket_id IS NULL`, status 'Template'),
-TicketOfficerLog (append-only via triggers, `performed_by` column – D1), Notifications.
-Ticket statuses: Open, In progress, Returned, Completed, Rejected.
-Step statuses: Template, Pending, Waiting, Active, Approved, Returned, Rejected.
-MariaDB date syntax: `DATEDIFF(end, start)`.
+## Database (Database/01_schema.sql)
+Persons (citizens), Officers (pre-registered), Tickets, Steps (stage, order, compulsory),
+TicketOfficerLog (append-only via triggers), Notifications (officer to officer).
+Ticket statuses: In Progress, Flagged, Completed. Step statuses: Pending, Completed, Skipped.

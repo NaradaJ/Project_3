@@ -18,17 +18,17 @@ partial class OfficerDashboardForm
     private void InitializeComponent()
     {
         lblWelcome = new Label();
-        lblRole = new Label();
-        btnProcess = new Button();
-        btnSearch = new Button();
+        rdoMine = new RadioButton();
+        rdoAll = new RadioButton();
+        gridTickets = new DataGridView();
+        lblEmpty = new Label();
+        btnNewTicket = new Button();
+        btnOpen = new Button();
+        btnLookup = new Button();
         btnNotifications = new Button();
         btnRefresh = new Button();
-        lblAssigned = new Label();
-        lblEmpty = new Label();
-        gridAssigned = new DataGridView();
-        btnChangePassword = new Button();
         btnLogout = new Button();
-        ((System.ComponentModel.ISupportInitialize)gridAssigned).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)gridTickets).BeginInit();
         SuspendLayout();
         //
         // lblWelcome
@@ -41,111 +41,118 @@ partial class OfficerDashboardForm
         lblWelcome.TabIndex = 0;
         lblWelcome.Text = "Welcome";
         //
-        // lblRole
+        // rdoMine
         //
-        lblRole.AutoSize = true;
-        lblRole.ForeColor = Color.DimGray;
-        lblRole.Location = new Point(17, 40);
-        lblRole.Name = "lblRole";
-        lblRole.Size = new Size(100, 15);
-        lblRole.TabIndex = 1;
-        lblRole.Text = "Officer dashboard";
+        rdoMine.AutoSize = true;
+        rdoMine.Checked = true;
+        rdoMine.Location = new Point(18, 50);
+        rdoMine.Name = "rdoMine";
+        rdoMine.Size = new Size(160, 19);
+        rdoMine.TabIndex = 1;
+        rdoMine.TabStop = true;
+        rdoMine.Text = "Tickets assigned to me";
+        rdoMine.UseVisualStyleBackColor = true;
+        rdoMine.CheckedChanged += rdoMine_CheckedChanged;
         //
-        // btnProcess
+        // rdoAll
         //
-        btnProcess.Location = new Point(15, 68);
-        btnProcess.Name = "btnProcess";
-        btnProcess.Size = new Size(170, 34);
-        btnProcess.TabIndex = 2;
-        btnProcess.Text = "Process Selected Ticket";
-        btnProcess.UseVisualStyleBackColor = true;
-        btnProcess.Click += btnProcess_Click;
+        rdoAll.AutoSize = true;
+        rdoAll.Location = new Point(200, 50);
+        rdoAll.Name = "rdoAll";
+        rdoAll.Size = new Size(130, 19);
+        rdoAll.TabIndex = 2;
+        rdoAll.Text = "All open tickets";
+        rdoAll.UseVisualStyleBackColor = true;
         //
-        // btnSearch
+        // gridTickets
         //
-        btnSearch.Location = new Point(195, 68);
-        btnSearch.Name = "btnSearch";
-        btnSearch.Size = new Size(120, 34);
-        btnSearch.TabIndex = 3;
-        btnSearch.Text = "Search Tickets";
-        btnSearch.UseVisualStyleBackColor = true;
-        btnSearch.Click += btnSearch_Click;
+        gridTickets.AllowUserToAddRows = false;
+        gridTickets.AllowUserToDeleteRows = false;
+        gridTickets.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        gridTickets.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        gridTickets.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        gridTickets.Location = new Point(15, 80);
+        gridTickets.MultiSelect = false;
+        gridTickets.Name = "gridTickets";
+        gridTickets.ReadOnly = true;
+        gridTickets.RowHeadersVisible = false;
+        gridTickets.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        gridTickets.Size = new Size(850, 380);
+        gridTickets.TabIndex = 3;
+        gridTickets.CellDoubleClick += gridTickets_CellDoubleClick;
+        //
+        // lblEmpty
+        //
+        lblEmpty.AutoSize = true;
+        lblEmpty.ForeColor = Color.DimGray;
+        lblEmpty.Location = new Point(25, 125);
+        lblEmpty.Name = "lblEmpty";
+        lblEmpty.Size = new Size(150, 15);
+        lblEmpty.TabIndex = 4;
+        lblEmpty.Text = "No open tickets to show";
+        lblEmpty.Visible = false;
+        //
+        // btnNewTicket
+        //
+        btnNewTicket.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        btnNewTicket.Location = new Point(15, 475);
+        btnNewTicket.Name = "btnNewTicket";
+        btnNewTicket.Size = new Size(120, 32);
+        btnNewTicket.TabIndex = 5;
+        btnNewTicket.Text = "New Ticket";
+        btnNewTicket.UseVisualStyleBackColor = true;
+        btnNewTicket.Click += btnNewTicket_Click;
+        //
+        // btnOpen
+        //
+        btnOpen.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        btnOpen.Location = new Point(145, 475);
+        btnOpen.Name = "btnOpen";
+        btnOpen.Size = new Size(120, 32);
+        btnOpen.TabIndex = 6;
+        btnOpen.Text = "Open Ticket";
+        btnOpen.UseVisualStyleBackColor = true;
+        btnOpen.Click += btnOpen_Click;
+        //
+        // btnLookup
+        //
+        btnLookup.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        btnLookup.Location = new Point(275, 475);
+        btnLookup.Name = "btnLookup";
+        btnLookup.Size = new Size(140, 32);
+        btnLookup.TabIndex = 7;
+        btnLookup.Text = "Look Up Ticket ID";
+        btnLookup.UseVisualStyleBackColor = true;
+        btnLookup.Click += btnLookup_Click;
         //
         // btnNotifications
         //
-        btnNotifications.Location = new Point(325, 68);
+        btnNotifications.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+        btnNotifications.Location = new Point(425, 475);
         btnNotifications.Name = "btnNotifications";
-        btnNotifications.Size = new Size(190, 34);
-        btnNotifications.TabIndex = 4;
+        btnNotifications.Size = new Size(180, 32);
+        btnNotifications.TabIndex = 8;
         btnNotifications.Text = "Notifications";
         btnNotifications.UseVisualStyleBackColor = true;
         btnNotifications.Click += btnNotifications_Click;
         //
         // btnRefresh
         //
-        btnRefresh.Location = new Point(525, 68);
+        btnRefresh.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        btnRefresh.Location = new Point(655, 475);
         btnRefresh.Name = "btnRefresh";
-        btnRefresh.Size = new Size(90, 34);
-        btnRefresh.TabIndex = 5;
+        btnRefresh.Size = new Size(100, 32);
+        btnRefresh.TabIndex = 9;
         btnRefresh.Text = "Refresh";
         btnRefresh.UseVisualStyleBackColor = true;
         btnRefresh.Click += btnRefresh_Click;
         //
-        // lblAssigned
-        //
-        lblAssigned.AutoSize = true;
-        lblAssigned.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        lblAssigned.Location = new Point(15, 115);
-        lblAssigned.Name = "lblAssigned";
-        lblAssigned.Size = new Size(160, 15);
-        lblAssigned.TabIndex = 6;
-        lblAssigned.Text = "Tickets assigned to me";
-        //
-        // lblEmpty
-        //
-        lblEmpty.AutoSize = true;
-        lblEmpty.ForeColor = Color.DimGray;
-        lblEmpty.Location = new Point(180, 115);
-        lblEmpty.Name = "lblEmpty";
-        lblEmpty.Size = new Size(190, 15);
-        lblEmpty.TabIndex = 7;
-        lblEmpty.Text = "No tickets are assigned to you";
-        lblEmpty.Visible = false;
-        //
-        // gridAssigned
-        //
-        gridAssigned.AllowUserToAddRows = false;
-        gridAssigned.AllowUserToDeleteRows = false;
-        gridAssigned.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        gridAssigned.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        gridAssigned.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        gridAssigned.Location = new Point(15, 135);
-        gridAssigned.MultiSelect = false;
-        gridAssigned.Name = "gridAssigned";
-        gridAssigned.ReadOnly = true;
-        gridAssigned.RowHeadersVisible = false;
-        gridAssigned.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        gridAssigned.Size = new Size(905, 340);
-        gridAssigned.TabIndex = 8;
-        gridAssigned.CellDoubleClick += gridAssigned_CellDoubleClick;
-        //
-        // btnChangePassword
-        //
-        btnChangePassword.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-        btnChangePassword.Location = new Point(15, 488);
-        btnChangePassword.Name = "btnChangePassword";
-        btnChangePassword.Size = new Size(150, 32);
-        btnChangePassword.TabIndex = 9;
-        btnChangePassword.Text = "Change Password";
-        btnChangePassword.UseVisualStyleBackColor = true;
-        btnChangePassword.Click += btnChangePassword_Click;
-        //
         // btnLogout
         //
         btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-        btnLogout.Location = new Point(810, 488);
+        btnLogout.Location = new Point(765, 475);
         btnLogout.Name = "btnLogout";
-        btnLogout.Size = new Size(110, 32);
+        btnLogout.Size = new Size(100, 32);
         btnLogout.TabIndex = 10;
         btnLogout.Text = "Log Out";
         btnLogout.UseVisualStyleBackColor = true;
@@ -155,24 +162,24 @@ partial class OfficerDashboardForm
         //
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(935, 535);
+        ClientSize = new Size(880, 520);
+        Controls.Add(lblEmpty);
         Controls.Add(lblWelcome);
-        Controls.Add(lblRole);
-        Controls.Add(btnProcess);
-        Controls.Add(btnSearch);
+        Controls.Add(rdoMine);
+        Controls.Add(rdoAll);
+        Controls.Add(gridTickets);
+        Controls.Add(btnNewTicket);
+        Controls.Add(btnOpen);
+        Controls.Add(btnLookup);
         Controls.Add(btnNotifications);
         Controls.Add(btnRefresh);
-        Controls.Add(lblAssigned);
-        Controls.Add(lblEmpty);
-        Controls.Add(gridAssigned);
-        Controls.Add(btnChangePassword);
         Controls.Add(btnLogout);
-        MinimumSize = new Size(800, 400);
+        MinimumSize = new Size(896, 559);
         Name = "OfficerDashboardForm";
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "GSTS – Officer";
+        Text = "GSTS – Officer Dashboard";
         Load += OfficerDashboardForm_Load;
-        ((System.ComponentModel.ISupportInitialize)gridAssigned).EndInit();
+        ((System.ComponentModel.ISupportInitialize)gridTickets).EndInit();
         ResumeLayout(false);
         PerformLayout();
     }
@@ -180,14 +187,14 @@ partial class OfficerDashboardForm
     #endregion
 
     private Label lblWelcome;
-    private Label lblRole;
-    private Button btnProcess;
-    private Button btnSearch;
+    private RadioButton rdoMine;
+    private RadioButton rdoAll;
+    private DataGridView gridTickets;
+    private Label lblEmpty;
+    private Button btnNewTicket;
+    private Button btnOpen;
+    private Button btnLookup;
     private Button btnNotifications;
     private Button btnRefresh;
-    private Label lblAssigned;
-    private Label lblEmpty;
-    private DataGridView gridAssigned;
-    private Button btnChangePassword;
     private Button btnLogout;
 }

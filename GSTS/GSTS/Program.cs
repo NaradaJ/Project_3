@@ -14,11 +14,11 @@ static class Program
     {
         ApplicationConfiguration.Initialize();
 
-        // NFR5 – any error inside a screen is shown as a clear message; the application keeps running.
+        // NFR Reliability – any error inside a screen is shown as a clear message; the application keeps running.
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
         Application.ThreadException += (sender, e) => Messages.ShowException(e.Exception);
 
-        // NFR5 – check the database connection at start-up.
+        // NFR Reliability – check the database connection at start-up.
         try
         {
             Db.TestConnection();

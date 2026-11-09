@@ -2,27 +2,20 @@ using GSTS.Models;
 
 namespace GSTS;
 
-// Holds the user who is currently logged in (pseudocode: SESSION.user).
+// Holds the officer who is using the application (pseudocode: current officer).
 public static class Session
 {
-    public static Person? CurrentUser { get; private set; }
+    public static Officer? CurrentOfficer { get; private set; }
 
-    // Set only when the logged-in user is an officer.
-    public static int? OfficerId { get; private set; }
+    public static int OfficerId => CurrentOfficer!.OfficerId;
 
-    public static int PersonId => CurrentUser!.PersonId;
-    public static string Role => CurrentUser?.Role ?? "";
-
-    public static void Start(Person user, int? officerId)
+    public static void Start(Officer officer)
     {
-        CurrentUser = user;
-        OfficerId = officerId;
+        CurrentOfficer = officer;
     }
 
-    // FR16 – Logout: CLEAR SESSION
     public static void Clear()
     {
-        CurrentUser = null;
-        OfficerId = null;
+        CurrentOfficer = null;
     }
 }

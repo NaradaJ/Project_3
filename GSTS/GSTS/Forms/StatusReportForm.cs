@@ -26,6 +26,8 @@ public partial class StatusReportForm : Form
 
     private void StatusReportForm_Load(object sender, EventArgs e)
     {
+        FitOnScreen();
+
         if (startTicketId != null)
         {
             ShowReport(startTicketId.Value);
@@ -105,8 +107,49 @@ public partial class StatusReportForm : Form
         UiHelper.FillGrid(gridHandlers, TicketService.GetPreviousHandlers(ticketId));
         UiHelper.FillGrid(gridSteps, StepService.GetSteps(ticketId), "step_id");
         UiHelper.FillGrid(gridLog, TicketService.GetActivityLog(ticketId));
+        SetColumnWidths();
         UpdateElapsed();
         timerElapsed.Start();
+    }
+
+    // Keeps the whole window (including the Close button) on screen when Windows
+    // display scaling makes the form taller or wider than the screen, then centres it
+    // over the main window.
+    private void FitOnScreen()
+    {
+        Rectangle area = Screen.FromControl(Owner ?? this).WorkingArea;
+        Width = Math.Min(Width, area.Width);
+        Height = Math.Min(Height, area.Height);
+
+        Rectangle centreOn = Owner != null ? Owner.Bounds : area;
+        int left = centreOn.Left + (centreOn.Width - Width) / 2;
+        int top = centreOn.Top + (centreOn.Height - Height) / 2;
+        Left = Math.Max(area.Left, Math.Min(left, area.Right - Width));
+        Top = Math.Max(area.Top, Math.Min(top, area.Bottom - Height));
+    }
+
+    // Gives the long text columns more room and wraps text, so nothing is cut off.
+    private void SetColumnWidths()
+    {
+        SetColumn(gridSteps, "Stage", 15, false);
+        SetColumn(gridSteps, "Step / Document", 50, true);
+        SetColumn(gridSteps, "Type", 20, false);
+        SetColumn(gridSteps, "Status", 20, false);
+
+        SetColumn(gridLog, "Date and Time", 20, false);
+        SetColumn(gridLog, "Officer", 17, false);
+        SetColumn(gridLog, "Action", 21, false);
+        SetColumn(gridLog, "Note", 42, true);
+    }
+
+    private static void SetColumn(DataGridView grid, string name, float weight, bool wrap)
+    {
+        if (grid.Columns.Contains(name))
+        {
+            DataGridViewColumn column = grid.Columns[name]!;
+            column.FillWeight = weight;
+            column.DefaultCellStyle.WrapMode = wrap ? DataGridViewTriState.True : DataGridViewTriState.False;
+        }
     }
 
     // FR10 – recalculated every second while the report is open.

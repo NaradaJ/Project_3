@@ -76,6 +76,7 @@ partial class StatusReportForm
         //
         // lblElapsed
         //
+        lblElapsed.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         lblElapsed.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
         lblElapsed.ForeColor = Color.DarkBlue;
         lblElapsed.Location = new Point(520, 50);
@@ -86,6 +87,7 @@ partial class StatusReportForm
         //
         // lblDetails
         //
+        lblDetails.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblDetails.BorderStyle = BorderStyle.FixedSingle;
         lblDetails.Location = new Point(15, 85);
         lblDetails.Name = "lblDetails";
@@ -109,6 +111,7 @@ partial class StatusReportForm
         gridHandlers.AllowUserToAddRows = false;
         gridHandlers.AllowUserToDeleteRows = false;
         gridHandlers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        gridHandlers.BackgroundColor = SystemColors.Window;
         gridHandlers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         gridHandlers.Location = new Point(15, 210);
         gridHandlers.Name = "gridHandlers";
@@ -132,7 +135,10 @@ partial class StatusReportForm
         //
         gridSteps.AllowUserToAddRows = false;
         gridSteps.AllowUserToDeleteRows = false;
+        gridSteps.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         gridSteps.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        gridSteps.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+        gridSteps.BackgroundColor = SystemColors.Window;
         gridSteps.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         gridSteps.Location = new Point(450, 210);
         gridSteps.Name = "gridSteps";
@@ -156,7 +162,10 @@ partial class StatusReportForm
         //
         gridLog.AllowUserToAddRows = false;
         gridLog.AllowUserToDeleteRows = false;
+        gridLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         gridLog.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        gridLog.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+        gridLog.BackgroundColor = SystemColors.Window;
         gridLog.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
         gridLog.Location = new Point(15, 390);
         gridLog.Name = "gridLog";
@@ -168,6 +177,7 @@ partial class StatusReportForm
         //
         // btnClose
         //
+        btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnClose.Location = new Point(775, 625);
         btnClose.Name = "btnClose";
         btnClose.Size = new Size(110, 32);
@@ -201,10 +211,9 @@ partial class StatusReportForm
         Controls.Add(lblLog);
         Controls.Add(gridLog);
         Controls.Add(btnClose);
-        FormBorderStyle = FormBorderStyle.FixedSingle;
-        MaximizeBox = false;
+        FormBorderStyle = FormBorderStyle.Sizable;
         Name = "StatusReportForm";
-        StartPosition = FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.Manual;
         Text = "GSTS – Ticket Status Report";
         FormClosed += StatusReportForm_FormClosed;
         Load += StatusReportForm_Load;

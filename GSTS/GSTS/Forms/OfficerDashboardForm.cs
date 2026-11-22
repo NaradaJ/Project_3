@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 using GSTS.Services;
 
@@ -10,12 +10,13 @@ public partial class OfficerDashboardForm : Form
 {
     public OfficerDashboardForm()
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
     }
 
     private void OfficerDashboardForm_Load(object sender, EventArgs e)
     {
-        lblWelcome.Text = "Welcome, " + Session.CurrentOfficer!.Name + " (" + Session.CurrentOfficer.Designation + ")";
+        lblWelcome.Text ="Welcome, " + Session.CurrentOfficer!.Name + " (" + Session.CurrentOfficer.Designation + ")";
         RefreshData();
     }
 

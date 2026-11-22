@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 
 namespace GSTS.Forms;
@@ -14,6 +14,7 @@ public partial class TicketPickerForm : Form
 
     public TicketPickerForm(string title, DataTable tickets)
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
         this.tickets = tickets;
         lblTitle.Text = title;

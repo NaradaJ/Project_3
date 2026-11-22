@@ -23,6 +23,8 @@ public static class LogService
     public const string TicketCompleted = "COMPLETED";
     public const string Approved = "APPROVED";
     public const string Flagged = "FLAGGED";
+    public const string FlagAccepted = "FLAG_ACCEPTED";
+    public const string FlagDenied = "FLAG_DENIED";
 
     // FR7, FR9 – APPEND an action with the officer ID, the note and the time.
     // The log is never updated or deleted (database triggers refuse it).
@@ -39,16 +41,18 @@ public static class LogService
     }
 
     // FR8 – CREATE a notification from one officer to another about a ticket.
+    // needsReply = true for a flag notification, which the receiver accepts or denies (D15).
     public static void Notify(MySqlConnection conn, MySqlTransaction tx,
-        int ticketId, int toOfficerId, int fromOfficerId, string message)
+        int ticketId, int toOfficerId, int fromOfficerId, string message, bool needsReply = false)
     {
         Db.Insert(conn, tx,
-            @"INSERT INTO Notifications (ticket_id, to_officer_id, from_officer_id, message, is_read, created_at)
-              VALUES (@ticket, @to, @from, @message, FALSE, NOW())",
+            @"INSERT INTO Notifications (ticket_id, to_officer_id, from_officer_id, message, is_read, needs_reply, created_at)
+              VALUES (@ticket, @to, @from, @message, FALSE, @needsReply, NOW())",
             Db.P("@ticket", ticketId),
             Db.P("@to", toOfficerId),
             Db.P("@from", fromOfficerId),
-            Db.P("@message", message));
+            Db.P("@message", message),
+            Db.P("@needsReply", needsReply));
     }
 
     // FR6 – the officer who last acted on the ticket (the newest log entry),

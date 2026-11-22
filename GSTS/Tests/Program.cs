@@ -187,8 +187,40 @@ Check("an officer cannot mark someone else's notification as read", Notification
 NotificationService.MarkAsRead(Convert.ToInt32(notes.Rows[0]["notification_id"]), Sunil);
 Check("the originating officer marks it as read", NotificationService.UnreadCount(Sunil) == 0);
 Check("Sunil must now review Kamal's flag", TicketService.NeedsReview(t3, Sunil));
-Check("Sunil approves after fixing: back to In Progress",
-    ReviewService.ReviewTicket(Sunil, t3, true, "Boundary added").Success && TicketService.GetTicket(t3)!.Status == "In Progress");
+
+// ---------------------------------------------------------------------
+Section("D15 - The originating officer accepts or denies a flag with a note");
+int flagNote = Convert.ToInt32(notes.Rows[0]["notification_id"]);
+Check("the flag notification is waiting for a reply",
+    (string)NotificationService.ViewNotifications(Sunil).Rows[0]["Reply"] == "Awaiting your reply");
+Check("a reply without a note is refused", !ReviewService.ReplyToFlag(Sunil, flagNote, true, " ").Success);
+Check("another officer cannot reply to Sunil's notification",
+    !ReviewService.ReplyToFlag(Kamal, flagNote, true, "Not mine").Success);
+Result accepted = ReviewService.ReplyToFlag(Sunil, flagNote, accept: true, "Will add the boundary");
+Check("Sunil accepts the flag", accepted.Success);
+Check("an accepted flag keeps the ticket Flagged", TicketService.GetTicket(t3)!.Status == "Flagged");
+Check("the acceptance and its note are logged",
+    (string)TicketService.GetActivityLog(t3).Rows[0]["Action"] == "FLAG_ACCEPTED"
+    && Convert.ToString(TicketService.GetActivityLog(t3).Rows[0]["Note"]) == "Will add the boundary");
+Check("after replying, Sunil can change the steps without a review", !TicketService.NeedsReview(t3, Sunil));
+DataTable kamalNotes = NotificationService.ViewNotifications(Kamal);
+Check("Kamal is notified that the flag was accepted, with Sunil's note",
+    kamalNotes.Rows.Count == 1 && ((string)kamalNotes.Rows[0]["Message"]).Contains("accepted")
+    && ((string)kamalNotes.Rows[0]["Message"]).Contains("Will add the boundary"));
+Check("the reply notification itself needs no reply", (string)kamalNotes.Rows[0]["Reply"] == "");
+Check("a flag can be answered only once", !ReviewService.ReplyToFlag(Sunil, flagNote, false, "Changed my mind").Success);
+Check("Sunil fixes the workflow", StepService.AddStep(Sunil, t3, "Boundary survey", 1, true, "").Success);
+Check("Kamal approves the fix: back to In Progress",
+    ReviewService.ReviewTicket(Kamal, t3, true, "Boundary added").Success && TicketService.GetTicket(t3)!.Status == "In Progress");
+
+Check("Kamal flags the workflow again", ReviewService.ReviewTicket(Kamal, t3, false, "Is a survey really needed?").Success);
+int flagNote2 = Convert.ToInt32(NotificationService.ViewNotifications(Sunil).Rows[0]["notification_id"]);
+Check("Sunil denies the flag", ReviewService.ReplyToFlag(Sunil, flagNote2, accept: false, "Yes, the council requires it").Success);
+Check("a denied flag returns the ticket to In Progress", TicketService.GetTicket(t3)!.Status == "In Progress");
+Check("the denial is logged", (string)TicketService.GetActivityLog(t3).Rows[0]["Action"] == "FLAG_DENIED");
+Check("Kamal is notified that the flag was denied, with Sunil's note",
+    ((string)NotificationService.ViewNotifications(Kamal).Rows[0]["Message"]).Contains("denied")
+    && ((string)NotificationService.ViewNotifications(Kamal).Rows[0]["Message"]).Contains("council requires it"));
 
 // ---------------------------------------------------------------------
 Section("FR3 - Reassignment");

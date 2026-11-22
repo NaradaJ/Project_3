@@ -10,7 +10,12 @@ public static class NotificationService
     {
         return Db.Query(
             @"SELECT n.notification_id, n.created_at AS `Date`, t.ticket_no AS `Ticket No`,
-                     o.name AS `From`, n.message AS `Message`, IF(n.is_read, 'Yes', 'No') AS `Read`
+                     o.name AS `From`, n.message AS `Message`, IF(n.is_read, 'Yes', 'No') AS `Read`,
+                     CASE WHEN n.needs_reply = 0 THEN ''
+                          WHEN n.replied_at IS NOT NULL THEN 'Replied'
+                          WHEN t.status = 'Flagged' THEN 'Awaiting your reply'
+                          ELSE 'Resolved' END AS `Reply`,
+                     (n.needs_reply = 1 AND n.replied_at IS NULL AND t.status = 'Flagged') AS can_reply
               FROM Notifications n
               JOIN Tickets t ON t.ticket_id = n.ticket_id
               JOIN Officers o ON o.officer_id = n.from_officer_id

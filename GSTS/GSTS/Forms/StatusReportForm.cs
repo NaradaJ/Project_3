@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 using GSTS.Models;
 using GSTS.Services;
@@ -20,6 +20,7 @@ public partial class StatusReportForm : Form
     // ticketId = show this ticket straight away, or null to start with an empty search.
     public StatusReportForm(int? ticketId)
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
         startTicketId = ticketId;
     }

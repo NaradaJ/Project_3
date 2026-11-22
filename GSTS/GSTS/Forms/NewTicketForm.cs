@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 using GSTS.Services;
 
@@ -12,6 +12,7 @@ public partial class NewTicketForm : Form
 
     public NewTicketForm()
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
     }
 

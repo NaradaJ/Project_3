@@ -224,7 +224,7 @@ erDiagram
 | FR5 | Control progression | `StepService.CompleteStep`, `SkipStep`, `ProgressTicket` | TicketForm |
 | FR6 | Review another officer's workflow | `TicketService.NeedsReview`, `ReviewService.ReviewTicket` | ReviewForm, TicketForm |
 | FR7 | Add notes | the `note` input of every action, `LogService.WriteLog` | every action screen |
-| FR8 | Notify the originating officer | `ReviewService.ReviewTicket`, `LogService.Notify` | NotificationsForm |
+| FR8 | Notify the originating officer; they accept or deny the flag with a note (D15) | `ReviewService.ReviewTicket`, `ReviewService.ReplyToFlag`, `LogService.Notify` | NotificationsForm |
 | FR9 | Maintain the activity log | `LogService.WriteLog` + triggers | StatusReportForm |
 | FR10 | Track elapsed time | `LogService.ElapsedTime` (timer every second) | TicketForm, StatusReportForm |
 | FR11 | Look up ticket status | `TicketService.FindTicket`, `SearchByCitizen`, `GetCompletedTickets`, `GetPreviousHandlers`, `GetActivityLog`; `StepService.GetSteps` | StatusReportForm, TicketPickerForm |
@@ -254,7 +254,7 @@ blocking progression, edits before review, UPDATE/DELETE on the log).
 dotnet run --project Tests
 ```
 
-Expected last line: `88 passed, 0 failed`.
+Expected last line: `104 passed, 0 failed`.
 
 Completed tickets leave the dashboard lists; find them with **Look Up Ticket ID** (leave the box empty, or search by name or NIC).
 
@@ -266,10 +266,11 @@ The Windows Forms screens are not covered by the automated checks; test them by 
 4. Click **Progress Ticket**: it is refused and lists the incomplete compulsory step.
 5. Complete the compulsory stage-1 step and progress: the ticket moves to stage 2 (the optional step did not block it).
 6. Sign in as `kamal`, open the ticket, choose **Flag/Change** with a note.
-7. Sign in as `nimali`: the dashboard shows 1 unread notification with Kamal's note.
-8. Approve, complete the stage-2 step and progress: the ticket is **Completed** with its total time.
-9. **Look Up Ticket ID** and check the handlers, steps and newest-first log. Then search with an empty box (completed tickets are listed) and by a citizen's name or NIC.
-10. Stop MySQL in XAMPP: the app shows a clear message instead of crashing.
+7. Sign in as `nimali`: the dashboard shows 1 unread notification. Open **Notifications** and select it: Kamal's full note is shown below the list.
+8. Type a reply note and click **Accept Flag** (the ticket stays Flagged) or **Deny Flag** (the ticket returns to In Progress). Kamal receives a notification with the decision and the note.
+9. Complete the stage-2 step and progress: the ticket is **Completed** with its total time.
+10. **Look Up Ticket ID** and check the handlers, steps and newest-first log. Then search with an empty box (completed tickets are listed) and by a citizen's name or NIC.
+11. Stop MySQL in XAMPP: the app shows a clear message instead of crashing.
 
 ---
 

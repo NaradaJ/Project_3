@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 using GSTS.Models;
 using GSTS.Services;
@@ -19,6 +19,7 @@ public partial class TicketForm : Form
 
     public TicketForm(int ticketId)
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
         this.ticketId = ticketId;
     }

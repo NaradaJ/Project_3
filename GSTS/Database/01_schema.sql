@@ -128,6 +128,9 @@ FOR EACH ROW
 
 -- ---------------------------------------------------------------------
 -- Notifications: messages from one officer to another about a ticket (FR8).
+--   needs_reply - 1 for a flag notification: the receiver accepts or denies
+--                 the flag with a note (see DEVIATIONS.md D15)
+--   replied_at  - when the receiver replied; a flag can be answered once
 -- ---------------------------------------------------------------------
 CREATE TABLE Notifications (
     notification_id  INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,6 +139,8 @@ CREATE TABLE Notifications (
     from_officer_id  INT           NOT NULL,
     message          VARCHAR(1200) NOT NULL,
     is_read          TINYINT(1)    NOT NULL DEFAULT 0,
+    needs_reply      TINYINT(1)    NOT NULL DEFAULT 0,
+    replied_at       DATETIME      NULL,
     created_at       DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notif_ticket FOREIGN KEY (ticket_id)       REFERENCES Tickets (ticket_id),
     CONSTRAINT fk_notif_to     FOREIGN KEY (to_officer_id)   REFERENCES Officers (officer_id),

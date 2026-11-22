@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using GSTS.Helpers;
 using GSTS.Services;
 
@@ -12,6 +12,7 @@ public partial class ReviewForm : Form
 
     public ReviewForm(int ticketId, string ticketNo)
     {
+        UiHelper.FitOnScreen(this);
         InitializeComponent();
         this.ticketId = ticketId;
         lblTitle.Text = "Review ticket " + ticketNo;
